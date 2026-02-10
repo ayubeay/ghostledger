@@ -5,7 +5,7 @@ System-assisted recovery for unpaid wages, withheld funds, and platform disputes
 
 GhostLedger turns unresolved payment disputes into structured, scorable, and coordinatable cases. It does **not** provide legal advice or representation.
 
-> **Status:** Prototype / active development.
+> **Status:** Prototype / active development
 > Public demo instances may be available intermittently.
 
 ---
@@ -14,7 +14,9 @@ GhostLedger turns unresolved payment disputes into structured, scorable, and coo
 
 GhostLedger helps surface legitimate recovery cases, reduce noise, and coordinate next steps responsibly.
 
-### Core systems
+---
+
+## Core systems
 
 - **Claim Intake** -- Structured submissions with validation, normalization, and deduplication
 - **LITMUS Scoring** -- 6-factor evaluation framework (principles public, implementation private)
@@ -29,7 +31,8 @@ GhostLedger helps surface legitimate recovery cases, reduce noise, and coordinat
 
 ## LITMUS (Public Principles)
 
-Only principles are public; scoring logic, thresholds, and weights are intentionally undisclosed to prevent gaming.
+Only principles are public.
+Scoring logic, thresholds, and weights are intentionally undisclosed to prevent gaming.
 
 - **L** -- Legitimate Obligation
 - **I** -- Independent Verifiability
@@ -42,6 +45,8 @@ Only principles are public; scoring logic, thresholds, and weights are intention
 
 ## Doctrine (Boundaries)
 
+GhostLedger is intentionally constrained:
+
 - **Detect != Accuse** -- Pattern detection, not judgment
 - **Coordinate != Enforce** -- Information routing, not outcomes
 - **Route != Represent** -- No legal advice or representation
@@ -50,7 +55,11 @@ Only principles are public; scoring logic, thresholds, and weights are intention
 
 ## Disclaimer
 
-GhostLedger coordinates recovery efforts only. It does not provide legal advice, legal services, or guarantees of recovery. LITMUS supports prioritization and review; it does not replace professional judgment.
+GhostLedger coordinates recovery efforts only.
+It does not provide legal advice, legal services, or guarantees of recovery.
+LITMUS supports prioritization and review; it does not replace professional judgment.
+
+---
 
 ## License
 
