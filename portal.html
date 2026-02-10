@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>GhostLedger — Check Your Claim</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0e14;color:#e6edf3;min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.header{padding:24px 20px 20px;text-align:center;border-bottom:1px solid #1c2129}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,#8B5E3C,#c9956b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#0a0e14}
+.header h1{font-size:20px;color:#fff;letter-spacing:-.5px}
+.header .tagline{font-size:11px;color:#8B5E3C;letter-spacing:.5px;text-transform:uppercase}
+.header .sub{font-size:12px;color:#6e7681;margin-top:6px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.5}
+
+/* MAIN */
+.main{flex:1;max-width:640px;margin:0 auto;padding:32px 20px;width:100%}
+
+/* SEARCH */
+.search-box{background:#12171e;border:1px solid #1c2129;border-radius:14px;padding:28px 24px;text-align:center;margin-bottom:24px}
+.search-box h2{font-size:18px;color:#e6edf3;margin-bottom:6px}
+.search-box p{font-size:13px;color:#6e7681;margin-bottom:18px}
+.search-row{display:flex;gap:8px}
+.search-row input{flex:1;background:#0d1117;border:1px solid #21262d;color:#e6edf3;padding:12px 14px;border-radius:10px;font-size:14px;font-family:inherit}
+.search-row input:focus{outline:none;border-color:#8B5E3C;box-shadow:0 0 0 3px rgba(139,94,60,.2)}
+.search-row input::placeholder{color:#484f58}
+.btn{padding:12px 22px;border:none;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;transition:all .15s}
+.btn-primary{background:#8B5E3C;color:#fff}
+.btn-primary:hover{background:#a0704d;transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* STATUS MESSAGE */
+.status-msg{text-align:center;padding:16px;font-size:14px;border-radius:10px;margin-bottom:20px;display:none}
+.status-msg.error{display:block;background:rgba(248,81,73,.08);color:#f85149;border:1px solid rgba(248,81,73,.2)}
+.status-msg.loading{display:block;background:rgba(251,191,36,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+.status-msg.empty{display:block;background:rgba(110,118,129,.08);color:#8b949e;border:1px solid rgba(110,118,129,.2)}
+
+/* CLAIM CARD */
+.claim-card{background:#12171e;border:1px solid #1c2129;border-radius:14px;margin-bottom:16px;overflow:hidden}
+.claim-header{padding:18px 20px;border-bottom:1px solid #1c2129;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.claim-id{font-size:11px;color:#484f58;font-family:monospace;letter-spacing:.5px}
+.claim-respondent{font-size:18px;font-weight:700;color:#e6edf3}
+.claim-amount{font-size:20px;font-weight:700;color:#c9956b}
+
+/* STATUS BADGE */
+.badge{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;display:inline-block}
+.b-filed{background:rgba(88,166,255,.12);color:#58a6ff}
+.b-under_review{background:rgba(251,191,36,.12);color:#fbbf24}
+.b-escalated{background:rgba(249,115,22,.12);color:#f97316}
+.b-in_resolution{background:rgba(167,139,250,.12);color:#a78bfa}
+.b-resolved{background:rgba(74,222,128,.12);color:#4ade80}
+.b-closed{background:rgba(110,118,129,.12);color:#6e7681}
+
+/* CLAIM BODY */
+.claim-body{padding:20px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.info-item{padding:12px;background:#0d1117;border-radius:10px;border:1px solid #1c2129}
+.info-item .lbl{font-size:10px;color:#585e68;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.info-item .val{font-size:14px;color:#e6edf3}
+.info-item.full{grid-column:1/-1}
+
+/* PROGRESS TRACKER */
+.progress-track{margin-bottom:20px}
+.progress-track h4{font-size:12px;color:#6e7681;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.steps{display:flex;gap:0;position:relative}
+.step{flex:1;text-align:center;position:relative}
+.step-dot{width:28px;height:28px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid #21262d;background:#0a0e14;color:#484f58;position:relative;z-index:1}
+.step.done .step-dot{background:#238636;border-color:#238636;color:#fff}
+.step.active .step-dot{background:#8B5E3C;border-color:#8B5E3C;color:#fff;box-shadow:0 0 12px rgba(139,94,60,.4)}
+.step-label{font-size:10px;color:#484f58;line-height:1.3}
+.step.done .step-label{color:#4ade80}
+.step.active .step-label{color:#c9956b}
+.step-line{position:absolute;top:14px;left:50%;right:-50%;height:2px;background:#21262d;z-index:0}
+.step.done .step-line{background:#238636}
+.step:last-child .step-line{display:none}
+
+/* NEXT ACTION */
+.next-action{background:rgba(139,94,60,.08);border:1px solid rgba(139,94,60,.2);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.next-action h4{font-size:11px;color:#8B5E3C;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.next-action p{font-size:14px;color:#e6edf3;line-height:1.5}
+
+/* TIMELINE */
+.timeline{margin-top:12px}
+.timeline h4{font-size:12px;color:#6e7681;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.tl-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #1c2129;font-size:13px}
+.tl-item:last-child{border-bottom:none}
+.tl-dot{width:8px;height:8px;border-radius:50%;background:#8B5E3C;flex-shrink:0;margin-top:5px}
+.tl-dot.intake{background:#1f6feb}
+.tl-dot.status{background:#238636}
+.tl-dot.classified{background:#8b5cf6}
+.tl-dot.note{background:#fbbf24}
+.tl-dot.signal{background:#f85149}
+.tl-content{flex:1}
+.tl-topic{color:#8b949e;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.tl-detail{color:#c9d1d9;margin-top:2px}
+.tl-time{color:#484f58;font-size:11px;flex-shrink:0}
+
+/* FOOTER */
+.footer{text-align:center;padding:20px;border-top:1px solid #1c2129;font-size:11px;color:#484f58;line-height:1.6}
+.footer a{color:#8B5E3C;text-decoration:none}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .info-grid{grid-template-columns:1fr}
+  .steps{flex-wrap:wrap;gap:4px}
+  .step-line{display:none}
+  .search-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-row">
+    <div class="logo">GL</div>
+    <h1>GhostLedger</h1>
+  </div>
+  <div class="tagline">Payment Recovery Coordination</div>
+  <div class="sub">Check the status of your claim. Enter the email address you used when you filed.</div>
+  <div style="margin-top:12px;display:flex;gap:16px;justify-content:center;font-size:13px">
+    <a href="/portal" style="color:#c9956b;text-decoration:none;border-bottom:2px solid #8B5E3C;padding-bottom:2px">Check Your Claim</a>
+    <a href="/how-it-works" style="color:#8B5E3C;text-decoration:none;border-bottom:2px solid transparent;padding-bottom:2px">How It Works</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="search-box">
+    <h2>Look Up Your Claim</h2>
+    <p>We'll show you the current status, next steps, and full timeline.</p>
+    <div class="search-row">
+      <input type="email" id="emailInput" placeholder="your@email.com" onkeydown="if(event.key==='Enter')lookupClaim()">
+      <button class="btn btn-primary" id="lookupBtn" onclick="lookupClaim()">Check Status</button>
+    </div>
+  </div>
+
+  <div id="statusMsg" class="status-msg"></div>
+  <div id="resultsContainer"></div>
+</div>
+
+<div class="footer">
+  GhostLedger coordinates recovery of unpaid and withheld funds. No recovery, no fee.<br>
+  This is not legal advice. GhostLedger does not provide legal representation.<br>
+  <a href="/how-it-works">How It Works</a> &middot; <a href="/portal">Check Your Claim</a>
+</div>
+
+<script>
+const API_BASE = location.protocol === 'file:' ? 'http://localhost:8081' : '';
+
+const STATUS_ORDER = ['filed','under_review','awaiting_review','escalated','in_resolution','resolved'];
+const STATUS_LABELS = {
+  filed: 'Filed',
+  under_review: 'Under Review',
+  awaiting_review: 'Professional Review',
+  escalated: 'Escalated',
+  in_resolution: 'In Resolution',
+  resolved: 'Resolved',
+  closed: 'Closed',
+  appealed: 'Appealed'
+};
+
+function getNextAction(claim){
+  const status = claim.status || 'filed';
+  const cc = claim.classification || {};
+  const path = (cc.recovery_path || '').replace(/_/g, ' ');
+
+  const resp = claim.respondent_entity || 'the platform';
+  const actions = {
+    filed: 'Your claim has been received and classified. Review will begin as capacity allows. You will be notified if additional information is needed.',
+    under_review: 'Your documentation is being reviewed. Initial outreach to ' + resp + ' may be prepared during this stage.',
+    awaiting_review: 'Your case is awaiting review by an independent professional. This step ensures the appropriate recovery approach is confirmed before proceeding.',
+    escalated: 'A formal communication has been sent to ' + resp + '. We are monitoring for their response.',
+    in_resolution: 'Active coordination is underway with ' + resp + ' toward resolution of your claim.',
+    resolved: 'Your case has been resolved. If funds were recovered, disbursement details will be communicated separately.',
+    closed: 'This case has been closed. If you believe this is in error, please reach out for clarification.',
+    appealed: 'Your case is under appeal. You will be notified of any developments.',
+  };
+  return actions[status] || 'Your claim is being processed.';
+}
+
+async function lookupClaim(){
+  const email = document.getElementById('emailInput').value.trim().toLowerCase();
+  const msg = document.getElementById('statusMsg');
+  const container = document.getElementById('resultsContainer');
+  const btn = document.getElementById('lookupBtn');
+
+  if(!email || !email.includes('@')){
+    msg.className = 'status-msg error';
+    msg.textContent = 'Please enter a valid email address.';
+    container.innerHTML = '';
+    return;
+  }
+
+  msg.className = 'status-msg loading';
+  msg.textContent = 'Looking up your claims...';
+  container.innerHTML = '';
+  btn.disabled = true;
+
+  try {
+    const r = await fetch(API_BASE + '/v1/portal/lookup?email=' + encodeURIComponent(email));
+    if(!r.ok) throw new Error('API error');
+    const data = await r.json();
+    btn.disabled = false;
+
+    if(!data.claims || !data.claims.length){
+      msg.className = 'status-msg empty';
+      msg.textContent = 'No claims found for this email address. If you recently submitted, please allow a few minutes for processing.';
+      return;
+    }
+
+    msg.style.display = 'none';
+    let html = '';
+
+    data.claims.forEach(claim => {
+      const cc = claim.classification || {};
+      const status = claim.status || 'filed';
+      const statusCls = 'b-' + status;
+      const amount = claim.amount_claimed_usd || 0;
+      const filedAt = claim.filed_at ? new Date(claim.filed_at).toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}) : '—';
+
+      html += '<div class="claim-card">';
+
+      // Header
+      html += '<div class="claim-header">';
+      html += '<div><div class="claim-id">' + (claim.claim_id || '') + '</div>';
+      html += '<div class="claim-respondent">' + (claim.respondent_entity || 'Unknown') + '</div></div>';
+      html += '<div style="text-align:right"><div class="claim-amount">$' + amount.toLocaleString(undefined,{minimumFractionDigits:2}) + '</div>';
+      html += '<span class="badge ' + statusCls + '">' + (STATUS_LABELS[status] || status) + '</span></div>';
+      html += '</div>';
+
+      // Body
+      html += '<div class="claim-body">';
+
+      // Progress tracker
+      html += '<div class="progress-track"><h4>Case Progress</h4><div class="steps">';
+      const currentIdx = STATUS_ORDER.indexOf(status);
+      STATUS_ORDER.forEach((s, i) => {
+        let cls = '';
+        if(i < currentIdx) cls = 'done';
+        else if(i === currentIdx) cls = 'active';
+        html += '<div class="step ' + cls + '">';
+        html += '<div class="step-line"></div>';
+        html += '<div class="step-dot">' + (i < currentIdx ? '&#x2713;' : (i + 1)) + '</div>';
+        html += '<div class="step-label">' + STATUS_LABELS[s] + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<div style="font-size:11px;color:#484f58;text-align:center;margin-top:6px;margin-bottom:4px">Cases move through these stages at different speeds depending on jurisdiction and complexity.</div>';
+      html += '</div>';
+
+      // Next action
+      html += '<div class="next-action"><h4>What Happens Next</h4>';
+      html += '<p>' + getNextAction(claim) + '</p></div>';
+
+      // Info grid
+      html += '<div class="info-grid">';
+      html += '<div class="info-item"><div class="lbl">Filed On</div><div class="val">' + filedAt + '</div></div>';
+      html += '<div class="info-item"><div class="lbl">Harm Type</div><div class="val">' + (claim.harm_type || '—').replace(/_/g,' ') + '</div></div>';
+      if(cc.recovery_path){
+        html += '<div class="info-item"><div class="lbl">Initial Routing Assessment</div><div class="val">' + cc.recovery_path.replace(/_/g,' ') + '<div style="font-size:10px;color:#484f58;margin-top:3px">Indicative only. May change based on professional review.</div></div></div>';
+      }
+      if(cc.value_band){
+        html += '<div class="info-item"><div class="lbl">Priority</div><div class="val">' + cc.value_band.replace(/_/g,' ') + '</div></div>';
+      }
+      if(claim.description){
+        html += '<div class="info-item full"><div class="lbl">Your Description</div><div class="val" style="font-size:13px;color:#8b949e">' + claim.description + '</div></div>';
+      }
+      html += '</div>';
+
+      // Timeline (from events if available) — deduplicate letter events
+      if(claim._timeline && claim._timeline.length){
+        html += '<div class="timeline"><h4>Activity Log</h4>';
+        // Deduplicate: group letter events by template, show only latest with version count
+        const letterCounts = {};
+        const deduped = [];
+        // First pass: count letter events per template
+        claim._timeline.forEach(ev => {
+          if(ev.topic === 'doc.letter.generated'){
+            const tpl = ev.payload.template || 'unknown';
+            letterCounts[tpl] = (letterCounts[tpl] || 0) + 1;
+          }
+        });
+        // Second pass: only keep last letter event per template type
+        const letterSeen = {};
+        const reversed = [...claim._timeline].reverse();
+        reversed.forEach(ev => {
+          if(ev.topic === 'doc.letter.generated'){
+            const tpl = ev.payload.template || 'unknown';
+            if(!letterSeen[tpl]){ letterSeen[tpl] = true; deduped.unshift(ev); }
+          } else { deduped.unshift(ev); }
+        });
+
+        deduped.forEach(ev => {
+          const dotCls = ev.topic.includes('intake') ? 'intake' : ev.topic.includes('status') ? 'status' : ev.topic.includes('classified') ? 'classified' : ev.topic.includes('note') ? 'note' : ev.topic.includes('signal') ? 'signal' : '';
+          const time = new Date(ev.timestamp).toLocaleDateString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+          const topicClean = ev.topic.split('.').slice(-2).join(' ').replace(/_/g,' ');
+          let detail = '';
+          if(ev.payload.old_status) detail = ev.payload.old_status.replace(/_/g,' ') + ' &rarr; ' + ev.payload.new_status.replace(/_/g,' ');
+          else if(ev.payload.classification) detail = 'Case classified and routing assessed';
+          else if(ev.payload.amount) detail = 'Claim filed for $' + ev.payload.amount.toLocaleString();
+          else if(ev.payload.template){
+            const tpl = ev.payload.template;
+            const count = letterCounts[tpl] || 1;
+            const tplNames = {initial:'Initial Recovery Notice',second:'Second Escalation',compliance:'Compliance Notice'};
+            detail = (tplNames[tpl] || tpl) + ' prepared' + (count > 1 ? ' (v' + count + ')' : '');
+          }
+          else detail = topicClean;
+
+          html += '<div class="tl-item">';
+          html += '<div class="tl-dot ' + dotCls + '"></div>';
+          html += '<div class="tl-content"><div class="tl-topic">' + topicClean + '</div><div class="tl-detail">' + detail + '</div></div>';
+          html += '<div class="tl-time">' + time + '</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      html += '</div></div>';
+    });
+
+    container.innerHTML = html;
+
+  } catch(e){
+    btn.disabled = false;
+    msg.className = 'status-msg error';
+    msg.textContent = 'Unable to reach the GhostLedger service. Please try again later.';
+  }
+}
+
+// Auto-focus email input
+document.getElementById('emailInput').focus();
+</script>
+</body>
+</html>

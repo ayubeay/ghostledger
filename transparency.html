@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transparency — GhostLedger</title>
+<meta name="description" content="GhostLedger system transparency. High-level operational statistics. No personal data disclosed.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#c9d1d9;font-family:'DM Sans',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#58a6ff;text-decoration:none}a:hover{text-decoration:underline}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #21262d;position:sticky;top:0;background:#0d1117;z-index:10}
+.nav-brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#e6edf3;letter-spacing:-.3px}
+.nav-brand span{color:#3fb950}
+.nav-links{display:flex;gap:16px;font-size:12px}
+.nav-links a{color:#8b949e;text-decoration:none;padding:4px 0;border-bottom:1px solid transparent;transition:all .15s}
+.nav-links a:hover{color:#e6edf3;border-bottom-color:#30363d}
+.container{max-width:720px;margin:0 auto;padding:60px 24px 80px}
+.hero{text-align:center;padding:80px 0 60px}
+.hero-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3fb950;border:1px solid #3fb95033;padding:4px 14px;border-radius:20px;margin-bottom:24px}
+.hero h1{font-size:44px;font-weight:700;color:#e6edf3;letter-spacing:-1.5px;margin-bottom:16px}
+.hero-sub{font-size:16px;color:#8b949e;max-width:520px;margin:0 auto;line-height:1.8}
+.divider{width:40px;height:1px;background:#21262d;margin:48px auto}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px 0}
+.stat-card{border:1px solid #21262d;border-radius:12px;padding:24px;text-align:center;background:#161b2208}
+.stat-value{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:#e6edf3;margin-bottom:4px}
+.stat-value.green{color:#3fb950}
+.stat-label{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.5px}
+.stat-note{font-size:10px;color:#484f58;margin-top:4px}
+.section{margin-bottom:48px}
+.section h2{font-size:20px;font-weight:700;color:#e6edf3;margin-bottom:12px;letter-spacing:-.3px}
+.section p{color:#8b949e;font-size:15px;margin-bottom:12px}
+.update-line{text-align:center;margin:24px 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#484f58}
+.breakdown{display:flex;flex-direction:column;gap:12px;margin:24px 0}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid #21262d;border-radius:8px}
+.breakdown-label{font-size:13px;color:#c9d1d9}
+.breakdown-value{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#e6edf3}
+.boundary{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:24px;margin-top:48px}
+.boundary h3{font-size:14px;font-weight:600;color:#e6edf3;margin-bottom:8px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
+.boundary p{color:#8b949e;font-size:13px;line-height:1.7}
+.cta-row{display:flex;gap:12px;justify-content:center;margin-top:48px;flex-wrap:wrap}
+.cta-btn{padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;transition:all .15s}
+.cta-primary{background:#3fb950;color:#0d1117;border:1px solid #3fb950}
+.cta-primary:hover{background:#2ea043;text-decoration:none}
+.cta-ghost{background:transparent;color:#8b949e;border:1px solid #30363d}
+.cta-ghost:hover{color:#e6edf3;border-color:#484f58;text-decoration:none}
+.footer{text-align:center;padding:40px 24px;border-top:1px solid #21262d;margin-top:60px}
+.footer p{font-size:11px;color:#484f58;line-height:1.8}
+.footer a{color:#6e7681}
+.loading{color:#484f58;font-size:12px}
+@media(max-width:600px){.hero h1{font-size:32px}.container{padding:40px 16px 60px}.stats-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-brand"><span>GL</span> GhostLedger</div>
+  <div class="nav-links">
+    <a href="/litmus">LITMUS</a>
+    <a href="/doctrine">Doctrine</a>
+    <a href="/how-it-works">How It Works</a>
+    <a href="/portal">Check Claim</a>
+  </div>
+</nav>
+<div class="container">
+<div class="hero">
+  <div class="hero-badge">System Status</div>
+  <h1>Transparency</h1>
+  <p class="hero-sub">High-level operational statistics. No personal information is disclosed on this page.</p>
+</div>
+<div class="divider"></div>
+<div class="update-line" id="lastUpdate">Loading system data...</div>
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-value" id="statClaims">—</div>
+    <div class="stat-label">Claims Filed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="statRespondents">—</div>
+    <div class="stat-label">Respondents Tracked</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="statScored">—</div>
+    <div class="stat-label">LITMUS Scored</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value green" id="statResolution">—</div>
+    <div class="stat-label">Resolution Rate</div>
+    <div class="stat-note">Claims fully resolved</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="statSignals">—</div>
+    <div class="stat-label">Active Signals</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="statValue">—</div>
+    <div class="stat-label">Total Value Tracked</div>
+  </div>
+</div>
+<div class="divider"></div>
+<div class="section">
+  <h2>Claim distribution by type</h2>
+  <div class="breakdown" id="harmBreakdown"><div class="loading">Loading...</div></div>
+</div>
+<div class="section">
+  <h2>Top respondents by claim volume</h2>
+  <div class="breakdown" id="respondentBreakdown"><div class="loading">Loading...</div></div>
+</div>
+<div class="boundary">
+  <h3>Data Policy</h3>
+  <p>This page displays aggregate statistics only. No claimant names, email addresses, claim details, or personally identifiable information is disclosed. Respondent names shown here are derived from claimant-submitted data and reflect reported entities, not verified identities.</p>
+  <p>Statistics update in real time from GhostLedger's operational database. GhostLedger does not provide legal advice or legal representation.</p>
+</div>
+<div class="cta-row">
+  <a href="/portal" class="cta-btn cta-primary">File a Claim</a>
+  <a href="/doctrine" class="cta-btn cta-ghost">Doctrine</a>
+  <a href="/litmus" class="cta-btn cta-ghost">LITMUS Framework</a>
+</div>
+</div>
+<footer class="footer">
+  <p>GhostLedger coordinates recovery efforts and does not provide legal advice or legal representation.</p>
+  <p>No fees are collected by GhostLedger. <a href="/how-it-works">Learn more</a>.</p>
+</footer>
+<script>
+const API_BASE = location.protocol === 'file:' ? 'http://localhost:8081' : '';
+async function loadTransparency(){
+  try {
+    const r = await fetch(API_BASE + '/v1/stats');
+    const d = await r.json();
+    document.getElementById('statClaims').textContent = d.total_claims || 0;
+    document.getElementById('statResolution').textContent = (d.resolution_rate || 0).toFixed(1) + '%';
+    try {
+      const sr = await fetch(API_BASE + '/v1/signals');
+      const sd = await sr.json();
+      document.getElementById('statSignals').textContent = (sd.signals || []).length;
+    } catch(e){ document.getElementById('statSignals').textContent = '—'; }
+    try {
+      const lr = await fetch(API_BASE + '/v1/litmus/stats');
+      const ld = await lr.json();
+      document.getElementById('statScored').textContent = ld.total_scored || 0;
+    } catch(e){ document.getElementById('statScored').textContent = '—'; }
+    try {
+      const ir = await fetch(API_BASE + '/v1/intel/respondents');
+      const id = await ir.json();
+      const profiles = id.profiles || [];
+      document.getElementById('statRespondents').textContent = profiles.length;
+      const totalValue = profiles.reduce((s,p) => s + (p.total_value || 0), 0);
+      document.getElementById('statValue').textContent = '$' + (totalValue >= 1000 ? (totalValue/1000).toFixed(1) + 'K' : totalValue.toFixed(0));
+      const top5 = profiles.slice(0, 5);
+      const rb = document.getElementById('respondentBreakdown');
+      if(top5.length){
+        rb.innerHTML = top5.map(p =>
+          '<div class="breakdown-row"><span class="breakdown-label">' + p.entity + '</span><span class="breakdown-value">' + p.claim_count + ' claims</span></div>'
+        ).join('');
+      } else { rb.innerHTML = '<div class="loading">No data yet</div>'; }
+      const harmMap = {};
+      profiles.forEach(p => {
+        (p.harm_types || []).forEach(h => {
+          const name = h.type || h.harm_type || 'Unknown';
+          harmMap[name] = (harmMap[name] || 0) + (h.count || 1);
+        });
+      });
+      const hb = document.getElementById('harmBreakdown');
+      const hEntries = Object.entries(harmMap).sort((a,b) => b[1]-a[1]);
+      if(hEntries.length){
+        hb.innerHTML = hEntries.map(([k,v]) =>
+          '<div class="breakdown-row"><span class="breakdown-label">' + k + '</span><span class="breakdown-value">' + v + '</span></div>'
+        ).join('');
+      } else { hb.innerHTML = '<div class="loading">No data yet</div>'; }
+    } catch(e){
+      document.getElementById('statRespondents').textContent = '—';
+      document.getElementById('statValue').textContent = '—';
+    }
+    document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleString();
+  } catch(e){
+    document.getElementById('lastUpdate').textContent = 'Unable to load system data';
+  }
+}
+loadTransparency();
+</script>
+</body>
+</html>

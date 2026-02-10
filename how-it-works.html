@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>GhostLedger — How It Works</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#0a0e14;color:#e6edf3;min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.header{padding:24px 20px 20px;text-align:center;border-bottom:1px solid #1c2129}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,#8B5E3C,#c9956b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#0a0e14}
+.header h1{font-size:20px;color:#fff;letter-spacing:-.5px}
+.header .tagline{font-size:11px;color:#8B5E3C;letter-spacing:.5px;text-transform:uppercase}
+.nav-links{margin-top:12px;display:flex;gap:16px;justify-content:center;font-size:13px}
+.nav-links a{color:#8B5E3C;text-decoration:none;padding:4px 0;border-bottom:2px solid transparent;transition:all .15s}
+.nav-links a:hover,.nav-links a.active{border-color:#8B5E3C;color:#c9956b}
+
+/* MAIN */
+.main{flex:1;max-width:720px;margin:0 auto;padding:32px 20px;width:100%}
+
+/* SECTION */
+.section{margin-bottom:32px}
+.section-title{font-size:18px;color:#e6edf3;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title .icon{font-size:22px}
+.section-body{font-size:14px;color:#8b949e;line-height:1.75}
+.section-body p{margin-bottom:12px}
+
+/* CARDS */
+.process-flow{display:flex;flex-direction:column;gap:0;position:relative;margin:24px 0}
+.flow-step{display:flex;gap:16px;position:relative}
+.flow-step:not(:last-child)::before{content:'';position:absolute;left:19px;top:42px;bottom:-2px;width:2px;background:#21262d}
+.flow-num{width:40px;height:40px;border-radius:50%;background:#12171e;border:2px solid #8B5E3C;color:#c9956b;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;position:relative;z-index:1}
+.flow-step.complete .flow-num{background:#238636;border-color:#238636;color:#fff}
+.flow-content{flex:1;background:#12171e;border:1px solid #1c2129;border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.flow-content h4{font-size:15px;color:#e6edf3;margin-bottom:6px}
+.flow-content p{font-size:13px;color:#8b949e;line-height:1.6}
+.flow-content .detail{font-size:12px;color:#585e68;margin-top:6px;font-style:italic}
+
+/* INFO BOX */
+.info-box{background:#12171e;border:1px solid #1c2129;border-radius:12px;padding:18px 20px;margin:16px 0}
+.info-box h4{font-size:14px;color:#e6edf3;margin-bottom:8px}
+.info-box p{font-size:13px;color:#8b949e;line-height:1.6;margin-bottom:6px}
+
+/* HIGHLIGHT BOX */
+.highlight-box{background:rgba(139,94,60,.06);border:1px solid rgba(139,94,60,.2);border-radius:12px;padding:18px 20px;margin:16px 0}
+.highlight-box h4{font-size:14px;color:#c9956b;margin-bottom:8px}
+.highlight-box p{font-size:13px;color:#8b949e;line-height:1.6;margin-bottom:6px}
+
+/* SAFETY BOX */
+.safety-box{background:rgba(74,222,128,.04);border:1px solid rgba(74,222,128,.15);border-radius:12px;padding:18px 20px;margin:16px 0}
+.safety-box h4{font-size:14px;color:#4ade80;margin-bottom:8px}
+.safety-box p{font-size:13px;color:#8b949e;line-height:1.6;margin-bottom:6px}
+
+/* FAQ */
+.faq-item{background:#12171e;border:1px solid #1c2129;border-radius:10px;margin-bottom:10px;overflow:hidden}
+.faq-q{padding:14px 18px;font-size:14px;color:#e6edf3;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:500}
+.faq-q:hover{background:rgba(139,94,60,.04)}
+.faq-q .arrow{color:#8B5E3C;font-size:16px;transition:transform .2s}
+.faq-a{padding:0 18px 14px;font-size:13px;color:#8b949e;line-height:1.6;display:none}
+.faq-item.open .faq-a{display:block}
+.faq-item.open .arrow{transform:rotate(180deg)}
+
+/* FOOTER */
+.footer{text-align:center;padding:20px;border-top:1px solid #1c2129;font-size:11px;color:#484f58;line-height:1.6}
+.footer a{color:#8B5E3C;text-decoration:none}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  .flow-step{flex-direction:column;gap:8px}
+  .flow-step::before{display:none}
+  .nav-links{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-row">
+    <div class="logo">GL</div>
+    <h1>GhostLedger</h1>
+  </div>
+  <div class="tagline">Payment Recovery Coordination</div>
+  <div class="nav-links">
+    <a href="/portal">Check Your Claim</a>
+    <a href="/how-it-works" class="active">How It Works</a>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- INTRO -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x1F4D6;</span> What GhostLedger Does</div>
+    <div class="section-body">
+      <p>GhostLedger helps people recover money that was owed to them but never paid. When a platform, employer, or company withholds funds you earned, GhostLedger coordinates the recovery process by organizing your claim, communicating with the respondent, and connecting you with appropriate resources.</p>
+      <p>We are not a law firm, government agency, or debt collector. We are a coordination service that brings structure, documentation, and persistence to your payment dispute.</p>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x2699;&#xFE0F;</span> How the Process Works</div>
+    <div class="process-flow">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <h4>You Submit a Claim</h4>
+          <p>Fill out a short form describing who owes you, how much, and what happened. We ask for basic details like the company name, amount, and any steps you've already taken.</p>
+          <div class="detail">Your information is stored securely and used only for your claim. We do not share it without your authorization.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <h4>Your Claim Is Classified</h4>
+          <p>Our system reviews your claim to understand the type of dispute, the amount involved, and the best initial approach. This helps us prioritize and route your case appropriately.</p>
+          <div class="detail">Classification considers: claim size, dispute type, whether you've contacted support, and known patterns from similar cases.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <h4>We Communicate with the Respondent</h4>
+          <p>GhostLedger prepares and sends professional, factual correspondence to the company or platform that owes you. These letters request information, follow up on prior contact, and reference applicable consumer protection frameworks when relevant.</p>
+          <div class="detail">All communications are informational. We never threaten legal action, impersonate authorities, or use coercive language.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <h4>Your Case Is Monitored</h4>
+          <p>We track the status of your claim through multiple follow-up stages. If the respondent does not reply, we escalate the level of correspondence. If patterns emerge showing the same company affecting multiple people, we flag that for review.</p>
+          <div class="detail">You can check your case status anytime through the Claimant Portal using the email you filed with.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-content">
+          <h4>Resolution or Referral</h4>
+          <p>Many cases are resolved through direct coordination. If your case requires legal expertise, we can connect you with an independent attorney through the ILF (Independent Legal Fellowship) network. The attorney decides independently whether to take the case.</p>
+          <div class="detail">Referral to a lawyer is an introduction, not representation. Any legal relationship is between you and the attorney.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT WE DO / DON'T DO -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x2705;</span> What We Do</div>
+    <div class="info-box">
+      <p>Organize and document your payment dispute in a structured format.</p>
+      <p>Send professional, factual inquiries to the company that owes you.</p>
+      <p>Track your case through multiple follow-up stages with increasing formality.</p>
+      <p>Detect patterns when many people report the same company, which may inform our approach.</p>
+      <p>Connect you with independent legal professionals if your case warrants it.</p>
+      <p>Provide you with a transparent view of your case status at any time.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x26D4;</span> What We Do Not Do</div>
+    <div class="info-box">
+      <p>We do not provide legal advice or legal representation.</p>
+      <p>We do not threaten companies with lawsuits, government complaints, or regulatory action.</p>
+      <p>We do not file complaints with government agencies on your behalf.</p>
+      <p>We do not impersonate attorneys, regulators, or law enforcement.</p>
+      <p>We do not guarantee any outcome or recovery amount.</p>
+      <p>We do not share your information with third parties without your explicit authorization.</p>
+    </div>
+  </div>
+
+  <!-- YOUR DATA -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x1F512;</span> Your Data and Privacy</div>
+    <div class="safety-box">
+      <h4>How We Handle Your Information</h4>
+      <p>Your claim data is stored securely and used exclusively for processing your dispute. We collect only what is necessary: your contact information, the details of your claim, and any documentation you provide.</p>
+      <p>We do not sell your data, use it for marketing, or share it outside the scope of your case. If your claim is referred to a legal professional, we share only the relevant case details and only with your authorization.</p>
+      <p>Every action taken on your case is logged in an immutable audit trail for transparency and compliance.</p>
+    </div>
+  </div>
+
+  <!-- SIGNALS -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x1F4CA;</span> How Pattern Detection Works</div>
+    <div class="highlight-box">
+      <h4>What Signals Are</h4>
+      <p>When multiple people file claims against the same company, our system detects these patterns — we call them signals. Signals help us understand which companies are generating the most disputes and what kinds of issues are most common.</p>
+      <p>Signals reflect statistical patterns in our claims data. They do not indicate wrongdoing, liability, or fault on the part of any company. They inform our review process — they do not trigger any automated actions against anyone.</p>
+      <p>Signals older than 90 days are automatically downgraded to prevent stale data from inflating patterns. This ensures our assessments reflect current conditions, not historical accumulation.</p>
+    </div>
+  </div>
+
+  <!-- ILF EXPLAINER -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x2696;&#xFE0F;</span> The Independent Legal Fellowship (ILF)</div>
+    <div class="info-box">
+      <h4>How Legal Referrals Work</h4>
+      <p>Some cases benefit from professional legal review. The ILF is a network of independent attorneys who have volunteered to receive referrals from GhostLedger.</p>
+      <p>When we refer your case, we share relevant details with a lawyer who may be able to help. The lawyer reviews the case independently and decides whether to offer their services. If they do, any legal relationship is directly between you and the attorney.</p>
+      <p>GhostLedger does not select, endorse, or guarantee any lawyer. We do not receive fees from attorneys for referrals. The ILF is a coordination mechanism, not a law firm.</p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x2753;</span> Common Questions</div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Does it cost anything to file a claim?<span class="arrow">&#x25BC;</span></div>
+      <div class="faq-a">Filing a claim with GhostLedger is free. There are no upfront costs. If your case is referred to a lawyer, the lawyer may have their own fee structure which they will discuss with you directly.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">How long does the process take?<span class="arrow">&#x25BC;</span></div>
+      <div class="faq-a">Timelines vary depending on the responsiveness of the company and the complexity of your case. Initial correspondence is typically sent within a few days of filing. Most cases go through 2-3 rounds of escalation over 3-4 weeks before resolution or referral.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Will GhostLedger threaten or sue the company?<span class="arrow">&#x25BC;</span></div>
+      <div class="faq-a">No. GhostLedger does not threaten, sue, or take any legal action against companies. Our correspondence is professional and factual. We ask questions, request information, and reference applicable consumer protection frameworks for informational purposes only.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Can I check the status of my claim?<span class="arrow">&#x25BC;</span></div>
+      <div class="faq-a">Yes. Visit the <a href="/portal" style="color:#8B5E3C">Claimant Portal</a> and enter the email address you used when filing. You'll see your case status, timeline, and next steps.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What if my claim is against a company outside the US?<span class="arrow">&#x25BC;</span></div>
+      <div class="faq-a">GhostLedger can process claims involving companies in any jurisdiction. Cross-border claims may require different approaches and may be flagged for professional review. The classification system accounts for jurisdictional scope.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">What happens if the company doesn't respond?<span class="arrow">&#x25BC;</span></div>
+      <div class="faq-a">If the respondent doesn't reply to our initial inquiry, we follow up with additional correspondence at increasing levels of formality. If after multiple attempts there is no response, your case may be referred to a legal professional for further options.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Is GhostLedger a government agency?<span class="arrow">&#x25BC;</span></div>
+      <div class="faq-a">No. GhostLedger is not affiliated with any government agency, regulatory body, or law enforcement organization. We are an independent coordination service.</div>
+    </div>
+  </div>
+
+  <!-- FUTURE MODULES -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x1F6A7;</span> Future Modules</div>
+    <div class="info-box">
+      <p>GhostLedger currently focuses on withheld funds, platform payout disputes, and freelancer payment recovery. Future modules may include insurance claim coordination (e.g., auto and property), focused on documentation organization and status tracking only. We do not act as public adjusters, negotiate settlements, or provide legal advice in any vertical.</p>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section">
+    <div class="section-title"><span class="icon">&#x1F4EC;</span> Questions?</div>
+    <div class="info-box">
+      <p>If you have questions about your claim or how GhostLedger works, you can check your claim status through the <a href="/portal" style="color:#8B5E3C">Claimant Portal</a> or reach out to our team for clarification.</p>
+      <p>For general information about your consumer rights, we recommend visiting the <a href="https://www.consumerfinance.gov" target="_blank" rel="noopener" style="color:#8B5E3C">Consumer Financial Protection Bureau (CFPB)</a> or your state attorney general's consumer protection division.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  GhostLedger &mdash; Payment Recovery Coordination (Non-Legal)<br>
+  This is not legal advice. GhostLedger does not provide legal representation or file government complaints.<br>
+  No government filing or legal action is implied or threatened by the use of this service.<br>
+  <a href="/portal">Check Your Claim</a> &middot; <a href="/how-it-works">How It Works</a>
+</div>
+
+</body>
+</html>

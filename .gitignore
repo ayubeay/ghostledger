@@ -1,0 +1,11 @@
+ghostledger.db
+*.pyc
+__pycache__/
+logs/
+*.log
+.env
+server.log
+*.bak
+*.bak_v6
+com.ghostledger.intake.plist
+.fuse_hidden*

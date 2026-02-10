@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LITMUS — GhostLedger</title>
+<meta name="description" content="How GhostLedger evaluates claims before coordination ever begins. Six principles. No opinions. Structured signal.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#c9d1d9;font-family:'DM Sans',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:#58a6ff;text-decoration:none}
+a:hover{text-decoration:underline}
+
+.container{max-width:720px;margin:0 auto;padding:60px 24px 80px}
+
+/* Nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid #21262d;position:sticky;top:0;background:#0d1117;z-index:10}
+.nav-brand{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#e6edf3;letter-spacing:-.3px}
+.nav-brand span{color:#3fb950}
+.nav-links{display:flex;gap:16px;font-size:12px}
+.nav-links a{color:#8b949e;text-decoration:none;padding:4px 0;border-bottom:1px solid transparent;transition:all .15s}
+.nav-links a:hover{color:#e6edf3;border-bottom-color:#30363d}
+
+/* Hero */
+.hero{text-align:center;padding:80px 0 60px}
+.hero-badge{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#3fb950;border:1px solid #3fb95033;padding:4px 14px;border-radius:20px;margin-bottom:24px}
+.hero h1{font-size:48px;font-weight:700;color:#e6edf3;letter-spacing:-1.5px;margin-bottom:16px}
+.hero h1 span{color:#3fb950}
+.hero-sub{font-size:16px;color:#8b949e;max-width:520px;margin:0 auto;line-height:1.8}
+
+/* Divider */
+.divider{width:40px;height:1px;background:#21262d;margin:48px auto}
+
+/* Section */
+.section{margin-bottom:48px}
+.section h2{font-size:20px;font-weight:700;color:#e6edf3;margin-bottom:12px;letter-spacing:-.3px}
+.section p{color:#8b949e;font-size:15px;margin-bottom:12px}
+.section p strong{color:#c9d1d9}
+
+/* Principles */
+.principles{display:flex;flex-direction:column;gap:24px;margin-top:32px}
+.principle{border:1px solid #21262d;border-radius:12px;padding:24px;background:#161b2208;transition:border-color .2s}
+.principle:hover{border-color:#30363d}
+.principle-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.principle-letter{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:#3fb950;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:#3fb95012;border-radius:8px;flex-shrink:0}
+.principle-name{font-size:16px;font-weight:600;color:#e6edf3}
+.principle p{color:#8b949e;font-size:14px;line-height:1.7}
+
+/* Boundary */
+.boundary{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:24px;margin-top:48px}
+.boundary h3{font-size:14px;font-weight:600;color:#e6edf3;margin-bottom:8px;font-family:'JetBrains Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
+.boundary p{color:#8b949e;font-size:13px;line-height:1.7}
+
+/* CTA */
+.cta-row{display:flex;gap:12px;justify-content:center;margin-top:48px;flex-wrap:wrap}
+.cta-btn{padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;transition:all .15s}
+.cta-primary{background:#3fb950;color:#0d1117;border:1px solid #3fb950}
+.cta-primary:hover{background:#2ea043;text-decoration:none}
+.cta-ghost{background:transparent;color:#8b949e;border:1px solid #30363d}
+.cta-ghost:hover{color:#e6edf3;border-color:#484f58;text-decoration:none}
+
+/* Footer */
+.footer{text-align:center;padding:40px 24px;border-top:1px solid #21262d;margin-top:60px}
+.footer p{font-size:11px;color:#484f58;line-height:1.8}
+.footer a{color:#6e7681}
+
+@media(max-width:600px){
+  .hero h1{font-size:32px}
+  .container{padding:40px 16px 60px}
+  .nav-links{gap:10px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand"><span>GL</span> GhostLedger</div>
+  <div class="nav-links">
+    <a href="/how-it-works">How It Works</a>
+    <a href="/portal">Check Claim</a>
+    <a href="/professionals">For Professionals</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<div class="hero">
+  <div class="hero-badge">Evaluation Framework</div>
+  <h1>L<span>I</span>TMUS</h1>
+  <p class="hero-sub">How GhostLedger evaluates claims before coordination ever begins. Six principles. No opinions. Structured signal.</p>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <h2>What LITMUS is</h2>
+  <p>LITMUS is GhostLedger's internal framework for determining whether a claim is real, actionable, and worth coordinating around.</p>
+  <p>It is not a legal opinion. It is not a judgment. It is a <strong>signal of seriousness</strong>.</p>
+  <p>Every claim that enters GhostLedger is evaluated against six principles before any coordination, escalation, or professional referral occurs. Claims that do not meet the threshold do not advance. Claims that pass are treated as legitimate recovery candidates.</p>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <h2>The six principles</h2>
+  <div class="principles">
+
+    <div class="principle">
+      <div class="principle-header">
+        <div class="principle-letter">L</div>
+        <div class="principle-name">Legitimate Obligation</div>
+      </div>
+      <p>Is there a real, owed obligation? LITMUS begins by asking whether money was actually earned, promised, or contractually due. If the claim is speculative, aspirational, or based on misunderstanding, it does not advance.</p>
+    </div>
+
+    <div class="principle">
+      <div class="principle-header">
+        <div class="principle-letter">I</div>
+        <div class="principle-name">Independent Verifiability</div>
+      </div>
+      <p>Can the claim stand on its own, without hype, narrative, or speculation? Real financial obligations exist regardless of market conditions, public sentiment, or platform status. If the claim only makes sense in a specific context, it is fragile.</p>
+    </div>
+
+    <div class="principle">
+      <div class="principle-header">
+        <div class="principle-letter">T</div>
+        <div class="principle-name">Tactical Readiness</div>
+      </div>
+      <p>Has the claimant already tried reasonable steps? LITMUS favors claims where the claimant has made good-faith attempts — contacted support, documented the issue, followed the platform's process. Coordination is not a first resort; it is a force multiplier.</p>
+    </div>
+
+    <div class="principle">
+      <div class="principle-header">
+        <div class="principle-letter">M</div>
+        <div class="principle-name">Material Evidence</div>
+      </div>
+      <p>Is there more than promises or screenshots? Contracts, invoices, payout records, correspondence, bank statements — material evidence separates recoverable claims from noise. Promises or informal assurances alone do not meet the threshold.</p>
+    </div>
+
+    <div class="principle">
+      <div class="principle-header">
+        <div class="principle-letter">U</div>
+        <div class="principle-name">Unresolved Harm</div>
+      </div>
+      <p>Is the harm ongoing or meaningfully unresolved? If the platform already paid, if the dispute was settled, if the claimant received compensation — there is nothing to coordinate. LITMUS only advances active, open obligations.</p>
+    </div>
+
+    <div class="principle">
+      <div class="principle-header">
+        <div class="principle-letter">S</div>
+        <div class="principle-name">Systemic Signal</div>
+      </div>
+      <p>Does this appear isolated — or repeated? When multiple claimants report the same respondent, the same pattern, the same withholding behavior, the signal strengthens. Systemic patterns receive elevated attention and coordination priority through aggregation.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <h2>Why this exists</h2>
+  <p>Coordination without standards becomes noise. Every platform, every forum, every group chat is full of complaints. Most go nowhere because no one separates signal from noise.</p>
+  <p>LITMUS exists so GhostLedger only escalates claims that deserve attention — and filters those that don't. It protects claimants from wasted effort, protects professionals from unqualified referrals, and protects the system from becoming another complaint box.</p>
+</div>
+
+<div class="boundary">
+  <h3>Public Disclosure</h3>
+  <p>LITMUS scoring operates internally inside GhostLedger. The principles described on this page explain how GhostLedger thinks — not how it calculates. Internal scoring logic, thresholds, and weighting are not publicly disclosed.</p>
+  <p>No LITMUS evaluation constitutes legal advice, legal judgment, or determination of liability. GhostLedger does not provide legal advice or legal representation. LITMUS does not replace independent professional judgment.</p>
+</div>
+
+<div class="cta-row">
+  <a href="/portal" class="cta-btn cta-primary">File a Claim</a>
+  <a href="/how-it-works" class="cta-btn cta-ghost">How It Works</a>
+  <a href="/professionals" class="cta-btn cta-ghost">For Professionals</a>
+</div>
+
+</div>
+
+<footer class="footer">
+  <p>GhostLedger coordinates recovery efforts and does not provide legal advice or legal representation.</p>
+  <p>No fees are collected by GhostLedger. <a href="/how-it-works">Learn more</a>.</p>
+</footer>
+
+</body>
+</html>
