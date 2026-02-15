@@ -9,3 +9,17 @@ server.log
 *.bak_v6
 com.ghostledger.intake.plist
 .fuse_hidden*
+
+# Internal docs
+*.pdf
+# Deploy configs
+fly.toml
+railway.json
+render.yaml
+Dockerfile
+.dockerignore
+Procfile
+deploy.sh
+install_deps.sh
+service.sh
+test_signals.sh
