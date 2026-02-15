@@ -32,9 +32,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import FastAPI, Header, HTTPException, Request, status
+from fastapi import FastAPI, Header, HTTPException, Request, status, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, Response
+from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from pydantic import BaseModel, Field, field_validator
 
 # ── Logging ──
@@ -11415,6 +11416,19 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# --- OPS DASHBOARD AUTH ---
+import secrets as _secrets
+_security = HTTPBasic()
+_OPS_USER = os.environ.get("GL_OPS_USER", "ops")
+_OPS_PASS = os.environ.get("GL_OPS_PASS", "gl-recovery-2026")
+
+def _verify_ops(credentials: HTTPBasicCredentials = Depends(_security)):
+    ok_user = _secrets.compare_digest(credentials.username, _OPS_USER)
+    ok_pass = _secrets.compare_digest(credentials.password, _OPS_PASS)
+    if not ok_user or ok_pass == False:
+        raise HTTPException(status_code=401, detail="Unauthorized", headers={"WWW-Authenticate": "Basic"})
+    return credentials.username
+
 # CORS — allow browser requests from localhost and deployed origins
 _allowed_origins = os.environ.get(
     "CORS_ORIGINS",
@@ -11432,14 +11446,19 @@ app.add_middleware(
 )
 
 
-@app.get("/", response_class=HTMLResponse)
-async def dashboard():
-    """Serve the GhostLedger Operations Hub dashboard."""
+@app.get("/")
+async def root_redirect():
+    """Redirect public visitors to the how-it-works page."""
+    return RedirectResponse(url="/how-it-works")
+
+@app.get("/ops", response_class=HTMLResponse)
+async def dashboard(operator: str = Depends(_verify_ops)):
+    """Serve the GhostLedger Operations Hub dashboard (auth required)."""
     html_path = Path(__file__).parent / "GhostLedger.html"
     if html_path.exists():
         return HTMLResponse(content=html_path.read_text(), status_code=200)
     return HTMLResponse(
-        content="<h1>GhostLedger</h1><p>Dashboard HTML not found. Place GhostLedger.html in the same folder.</p>",
+        content="<h1>GhostLedger</h1><p>Dashboard HTML not found.</p>",
         status_code=200,
     )
 

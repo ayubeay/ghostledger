@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ghostledger
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: GL_DB_PATH
+        value: /data/ghostledger.db
+      - key: PORT
+        value: "8081"
+    healthCheckPath: /health
+    disk:
+      name: gl-data
+      mountPath: /data
+      sizeGB: 1
