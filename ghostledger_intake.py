@@ -11475,6 +11475,18 @@ async def portal():
     )
 
 
+@app.get("/start", response_class=HTMLResponse)
+async def start_claim():
+    """Serve the Start a Claim intake form — public-facing."""
+    html_path = Path(__file__).parent / "start.html"
+    if html_path.exists():
+        return HTMLResponse(content=html_path.read_text(), status_code=200)
+    return HTMLResponse(
+        content="<h1>GhostLedger</h1><p>Intake form not found.</p>",
+        status_code=200,
+    )
+
+
 
 @app.get("/doctrine", response_class=HTMLResponse)
 async def doctrine_page():
